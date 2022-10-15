@@ -35,10 +35,10 @@ impl Solver {
 
         chars
             .clone()
+            .filter(|c| text.contains(c))
             .map(|a| chars.clone().map(move |b| (a, b)))
             .flatten()
             .filter(|(a, b)| a != b)
-            .filter(|(a, b)| text.contains(a) || text.contains(b))
             .map(|(a, b)| {
                 text.iter()
                     .filter(|c| **c == a || **c == b)
