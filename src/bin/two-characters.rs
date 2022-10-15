@@ -1,6 +1,5 @@
 // https://www.hackerrank.com/challenges/two-characters/problem
 
-use std::collections::BTreeMap;
 use std::error;
 use std::io::{stdin, BufRead};
 
@@ -31,55 +30,28 @@ struct Solver;
 impl Solver {
     // returns the longest possible length of the output string
     fn solve(input: Input) -> usize {
-        let text = input.0;
+        let text = input.0.into_bytes();
+        let chars = (b'a'..=b'z').filter(|c| text.contains(c));
 
-        let mut letters: Vec<Option<char>> = text.chars().map(Some).collect();
+        chars
+            .clone()
+            .map(|a| chars.clone().map(move |b| (a, b)))
+            .flatten()
+            .filter(|(a, b)| a != b)
+            .filter(|(a, b)| text.contains(a) || text.contains(b))
+            .map(|(a, b)| {
+                text.iter()
+                    .filter(|c| **c == a || **c == b)
+                    .collect::<Vec<_>>()
+            })
+            .filter(Solver::is_valid)
+            .map(|s| s.len())
+            .max()
+            .unwrap_or_default()
+    }
 
-        loop {
-            let mut adj_char = true;
-            while adj_char {
-                adj_char = false;
-
-                let text = letters.iter().filter(|c| c.is_some()).map(|c| c.unwrap());
-                for (c1, c2) in text.clone().zip(text.clone().skip(1)) {
-                    if c1 != c2 {
-                        continue;
-                    }
-
-                    letters
-                        .iter_mut()
-                        .for_each(|c| *c = c.and_then(|c| if c == c1 { None } else { Some(c) }));
-
-                    adj_char = true;
-                    break;
-                }
-            }
-
-            let text = letters.iter().filter(|c| c.is_some()).map(|c| c.unwrap());
-            let mut letters_map: BTreeMap<char, usize> = BTreeMap::new();
-
-            for c in text {
-                *letters_map.entry(c).or_default() += 1;
-            }
-
-            if letters_map.len() == 2 {
-                break;
-            } else if letters_map.len() < 2 {
-                return 0;
-            }
-
-            let min_c = letters_map
-                .iter()
-                .min_by(|kv1, kv2| kv1.1.cmp(kv2.1))
-                .unwrap()
-                .0;
-
-            letters
-                .iter_mut()
-                .for_each(|c| *c = c.and_then(|c| if c == *min_c { None } else { Some(c) }));
-        }
-
-        letters.into_iter().filter(Option::is_some).count()
+    fn is_valid(text: &Vec<&u8>) -> bool {
+        text.iter().skip(1).zip(text.iter()).all(|(a, b)| a != b)
     }
 }
 
@@ -102,7 +74,7 @@ mod tests {
     }
 
     #[test]
-    fn sample() {
+    fn sample0() {
         let stdin = "
         10
         beabeefeab
@@ -113,6 +85,34 @@ mod tests {
         let input = Input::read_from(&mut stdin).unwrap();
         let solution = Solver::solve(input);
         assert_eq!(solution, 5);
+    }
+
+    #[test]
+    fn sample1() {
+        let stdin = "
+        28
+        asdcbsdcagfsdbgdfanfghbsfdab
+        ";
+
+        let mut stdin = stdin.trim().as_bytes();
+
+        let input = Input::read_from(&mut stdin).unwrap();
+        let solution = Solver::solve(input);
+        assert_eq!(solution, 8);
+    }
+
+    #[test]
+    fn sample2() {
+        let stdin = "
+        28
+        asvkugfiugsalddlasguifgukvsa
+        ";
+
+        let mut stdin = stdin.trim().as_bytes();
+
+        let input = Input::read_from(&mut stdin).unwrap();
+        let solution = Solver::solve(input);
+        assert_eq!(solution, 0);
     }
 
     #[test]
