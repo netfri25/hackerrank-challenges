@@ -35,8 +35,7 @@ impl Solver {
 
         chars
             .clone()
-            .map(|a| chars.clone().map(move |b| (a, b)))
-            .flatten()
+            .flat_map(|a| chars.clone().map(move |b| (a, b)))
             .filter(|(a, b)| a != b)
             .map(|(a, b)| {
                 text.iter()
@@ -49,6 +48,7 @@ impl Solver {
             .unwrap_or_default()
     }
 
+    #[allow(clippy::ptr_arg)]
     fn is_valid(text: &Vec<&u8>) -> bool {
         text.iter().skip(1).zip(text.iter()).all(|(a, b)| a != b)
     }
