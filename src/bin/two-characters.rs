@@ -35,7 +35,6 @@ impl Solver {
 
         chars
             .clone()
-            .filter(|c| text.contains(c))
             .map(|a| chars.clone().map(move |b| (a, b)))
             .flatten()
             .filter(|(a, b)| a != b)
