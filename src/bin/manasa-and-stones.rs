@@ -1,3 +1,5 @@
+// https://www.hackerrank.com/challenges/manasa-and-stones/problem
+
 use std::error;
 use std::io::{self, BufRead};
 use std::str::FromStr;
