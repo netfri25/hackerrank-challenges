@@ -1,6 +1,7 @@
 // https://www.hackerrank.com/challenges/3d-surface-area/problem
 // the 3d surface area is the price
 
+use std::convert::TryInto;
 use std::error;
 use std::io::{stdin, BufRead};
 use std::ops::{Index, IndexMut};
@@ -16,6 +17,7 @@ fn main() {
     println!("{}", solution);
 }
 
+#[derive(Debug)]
 struct Input {
     width: usize,
     height: usize,
@@ -55,6 +57,7 @@ impl Input {
     }
 }
 
+#[derive(Debug)]
 struct Matrix<T> {
     content: Vec<T>,
     width: usize,
@@ -78,7 +81,7 @@ impl<T> Index<usize> for Matrix<T> {
     type Output = [T];
 
     fn index(&self, index: usize) -> &Self::Output {
-        &self.content[index * self.height..index * self.height + self.width]
+        &self.content[index * self.width..index * self.width + self.width]
     }
 }
 
@@ -99,9 +102,10 @@ impl Solver {
             matrix,
         } = input;
 
+
         let around_sum = {
             let x_sum = (0..width).map(|x| matrix[0][x]).sum::<usize>()
-                + (0..height).map(|x| matrix[height - 1][x]).sum::<usize>();
+                + (0..width).map(|x| matrix[height - 1][x]).sum::<usize>();
 
             let y_sum = (0..height).map(|y| matrix[y][0]).sum::<usize>()
                 + (0..height).map(|y| matrix[y][width - 1]).sum::<usize>();
@@ -169,5 +173,29 @@ mod tests {
         let solution = Solver::solve(input);
 
         assert_eq!(solution, 60);
+    }
+
+    #[test]
+    fn test1() {
+        let stdin = "
+        10 1
+        51
+        32
+        28
+        49
+        28
+        21
+        98
+        56
+        99
+        77
+        ";
+
+        let mut stdin = stdin.trim().as_bytes();
+
+        let input = Input::read(&mut stdin).unwrap();
+        let solution = Solver::solve(input);
+
+        assert_eq!(solution, 1482);
     }
 }
