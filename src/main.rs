@@ -1,3 +1,3 @@
 fn main() {
-    eprintln!("use --bin <challenge-name> instead");
+	eprintln!("use --bin <challenge-name> instead");
 }
