@@ -111,6 +111,7 @@ mod tests {
 		let solutions: Vec<usize> = (0..t)
 			.map(|_| {
 				let input = Input::read_from(&mut stdin).unwrap();
+				#[allow(clippy::let_and_return)]
 				let solution = Solver::solve(input);
 				solution
 			})
